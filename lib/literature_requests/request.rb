@@ -9,6 +9,10 @@ module LiteratureRequests
           .merge(items: items.map { |attrs| Item.new(attrs) }))
     end
 
+    def id
+      fetch(:id) { SecureRandom.uuid }
+    end
+
     class Item < Entity
       require :literature_code
 
@@ -28,7 +32,9 @@ module LiteratureRequests
       end
 
       DEFAULT_ATTRIBUTES = {
-        status_code: 0
+        status_code: 0,
+        created_at: ->{ Time.now },
+        updated_at: ->{ Time.now }
       }.freeze
 
       def initialize(attributes)
@@ -47,7 +53,9 @@ module LiteratureRequests
 
       def evaluated_attributes(attributes)
         if not attributes.key?(:status) || attributes.key?(:status_code)
-          DEFAULT_ATTRIBUTES.merge(attributes)
+          DEFAULT_ATTRIBUTES.merge(attributes).transform_values do |value|
+            value.respond_to?(:call) ? value.call : value
+          end
         elsif attributes.key?(:status)
           code = STATUSES[attributes[:status]]
           attributes.merge(status_code: code).tap do |h|

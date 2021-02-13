@@ -8,6 +8,7 @@ gem 'roda'
 gem 'tilt'
 gem 'erubi'
 gem 'puma'
+gem 'rake'
 
 gem 'hash_delegator', git: 'git@github.com:delonnewman/hash_delegator.git'
 

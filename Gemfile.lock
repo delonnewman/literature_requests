@@ -14,6 +14,7 @@ GEM
     puma (5.2.1)
       nio4r (~> 2.0)
     rack (2.2.3)
+    rake (13.0.3)
     roda (3.40.0)
       rack
     rspec (3.10.0)
@@ -40,6 +41,7 @@ DEPENDENCIES
   hash_delegator!
   pg
   puma
+  rake
   roda
   rspec
   sequel

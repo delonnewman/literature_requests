@@ -10,6 +10,7 @@ Sequel.migration do
       foreign_key :group_id, :groups
       String :first_name, null: false, index: true
       String :last_name, null: false, index: true
+      String :email, index: true
       FalseClass :publisher, null: false, default: true, index: true
       FalseClass :pioneer, null: false, default: false, index: true
       FalseClass :overseer, null: false, default: false, index: true

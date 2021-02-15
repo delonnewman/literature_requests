@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe LR::RequestRecords do
-  let(:person) { LR::People.new.first }
+  let(:person) { LR::Congregation.new.first }
   let(:request) { LR::Request[requester: person, items: [{ literature_code: 'wp21.1-E' }]] }
 
   it 'should store requests' do

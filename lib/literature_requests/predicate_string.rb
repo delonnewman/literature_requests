@@ -1,5 +1,5 @@
 module LiteratureRequests
-  class PredicateString
+  class PredicateString < BasicObject
     def initialize(string)
       @string = string
     end

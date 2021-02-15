@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe LR::People do
+RSpec.describe LR::Congregation do
   let(:person) { LR::Person.new(first_name: 'Testy', last_name: 'Tester') }
 
   it 'should store requests' do

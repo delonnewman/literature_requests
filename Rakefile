@@ -7,6 +7,11 @@ task :default => :spec
 namespace :db do
   desc "Run migrations"
   task :migrate do
-    sh 'sequel config/database.yml -m migrations/'
+    sh 'sequel config/database.yml -m db/migrations/'
   end
+end
+
+desc "Setup Application"
+task :setup => :'db:migrate' do
+  sh './scripts/import-congregation db/data/congregation_members.csv'
 end

@@ -1,2 +1,4 @@
-adapter: postgresql
+development:
+  adapter: sqlite
+  database: db/development.sqlite
 

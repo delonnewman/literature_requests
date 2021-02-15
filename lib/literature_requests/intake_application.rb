@@ -1,6 +1,6 @@
 module LiteratureRequests
   class IntakeApplication < Roda
-    plugin :render, views: 'templates/intake', escape: true
+    plugin :render, views: 'templates/intake'
     plugin :all_verbs
 
     route do |r|

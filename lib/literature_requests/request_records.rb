@@ -1,7 +1,6 @@
 module LiteratureRequests
   class RequestRecords < Repository
     LOAD_REQUEST_QUERY = <<~SQL
-
     SQL
 
     def initialize
@@ -21,7 +20,6 @@ module LiteratureRequests
       end
 
       @dataset.multi_insert(items)
-
       true
     end
   end

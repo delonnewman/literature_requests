@@ -19,7 +19,15 @@ module LiteratureRequests
   # Repositories
   require_relative 'literature_requests/repository'
   require_relative 'literature_requests/request_records'
-  require_relative 'literature_requests/people'
+  require_relative 'literature_requests/congregation'
+
+  # Factories
+  require_relative 'literature_requests/factory_methods'
+
+  # Views
+  require_relative 'literature_requests/congregation_listing'
 
   EMPTY_ARRAY = [].freeze
+
+  LR = self
 end

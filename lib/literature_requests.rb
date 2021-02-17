@@ -15,11 +15,13 @@ module LiteratureRequests
   require_relative 'literature_requests/person'
   require_relative 'literature_requests/group'
   require_relative 'literature_requests/request'
+  require_relative 'literature_requests/access_key'
 
   # Repositories
   require_relative 'literature_requests/repository'
   require_relative 'literature_requests/request_records'
   require_relative 'literature_requests/congregation'
+  require_relative 'literature_requests/access_key_repository'
 
   # Factories
   require_relative 'literature_requests/factory_methods'

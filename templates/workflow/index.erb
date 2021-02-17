@@ -1,0 +1,19 @@
+<div class="container">
+  <% listing.groups.each do |group| %>
+    <h2><%= group.overseer %> Group</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% group.each do |person| %>
+          <tr>
+            <td><%= person.name %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

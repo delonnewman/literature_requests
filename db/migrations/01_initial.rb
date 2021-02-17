@@ -14,6 +14,12 @@ Sequel.migration do
       String :name, null: false, index: true
     end
 
+    create_table? :access_keys do
+      uuid :id, null: false, index: true
+      String :key, null: false
+      foreign_key :person_id, :congregation, on_delete: :cascade
+    end
+
     create_table? :request_items do
       uuid :request_id, null: false, index: true
       String :literature_code, null: false, index: true

@@ -2,11 +2,26 @@
 module LiteratureRequests
   class Congregation < Repository
     LISTING_QUERY = <<~SQL
-        select publisher.first_name,
+        select publisher.id,
+               publisher.first_name,
                publisher.last_name,
+               publisher.email,
+               access_keys.id  as access_id,
+               access_keys.key as access_key,
                overseer.first_name  || ' ' || overseer.last_name  as group_overseer
           from congregation publisher
-     left join congregation overseer on publisher.group_overseer_id = overseer.id 
+     left join congregation overseer on publisher.group_overseer_id = overseer.id
+     left join access_keys on publisher.id = access_keys.person_id
+    SQL
+
+    ACCESS_QUERY = <<~SQL
+          select person.id,
+                 person.first_name,
+                 person.last_name,
+                 person.email
+            from congregation person
+      inner join access_keys on person.id = access_keys.person_id
+           where access_keys.id = ? and access_keys.key = ?
     SQL
 
     def initialize
@@ -19,6 +34,13 @@ module LiteratureRequests
 
     def by_id(id)
       result = @dataset.first(id: id)
+      return nil if result.nil?
+
+      Person[result]
+    end
+
+    def person_by_access(access_id:, key:)
+      result = @dataset.db.fetch(ACCESS_QUERY, access_id, key).first
       return nil if result.nil?
 
       Person[result]

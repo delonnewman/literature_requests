@@ -5,12 +5,23 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         <% group.each do |person| %>
           <tr>
             <td><%= person.name %></td>
+            <td>
+              <% if person.access_key %>
+                <%= request_link(person) %>
+                <a class="btn btn-secondary btn-sm" href="<%= request_link_mail(person) %>">Email Request Link</a>
+              <% else %>
+                <form method="post" action="/congregation/access_key/<%= person.id %>">
+                  <button class="btn btn-secondary btn-sm">Permit Access</button>
+                </form>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>

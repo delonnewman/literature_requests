@@ -7,6 +7,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
+    bcrypt (3.1.16)
     diff-lcs (1.4.4)
     erubi (1.10.0)
     nio4r (2.5.5)
@@ -31,6 +32,8 @@ GEM
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
     sequel (5.41.0)
+    shotgun (0.9.2)
+      rack (>= 1.0)
     sqlite3 (1.4.2)
     tilt (2.0.10)
 
@@ -38,6 +41,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bcrypt
   erubi
   hash_delegator!
   pg
@@ -46,6 +50,7 @@ DEPENDENCIES
   roda
   rspec
   sequel
+  shotgun
   sqlite3
   tilt
 

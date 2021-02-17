@@ -5,6 +5,7 @@ module LiteratureRequests
     def name
       "#{first_name} #{last_name}"
     end
+    alias to_s name
 
     def <=>(other)
       cmp = last_name <=> other.last_name

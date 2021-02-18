@@ -9,7 +9,7 @@ Sequel.migration do
       FalseClass :pioneer, null: false, default: false, index: true
     end
 
-    create_table? :literature do
+    create_table? :publications do
       String :code, null: false, index: true
       String :name, null: false, index: true
     end
@@ -22,7 +22,7 @@ Sequel.migration do
 
     create_table? :request_items do
       uuid :request_id, null: false, index: true
-      String :literature_code, null: false, index: true
+      String :publication_code, null: false, index: true
       Integer :status_code, null: false, index: true
       foreign_key :requester_id, :congregation
       Time :created_at, null: false, index: true

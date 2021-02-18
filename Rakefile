@@ -11,7 +11,12 @@ namespace :db do
   end
 end
 
-desc "Setup Application"
+desc "Setup application"
 task :setup => :'db:migrate' do
   sh './scripts/import-congregation db/data/congregation_members.csv'
+end
+
+desc "Start development server"
+task :server do
+  sh 'shotgun config.ru'
 end

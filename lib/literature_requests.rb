@@ -16,12 +16,14 @@ module LiteratureRequests
   require_relative 'literature_requests/group'
   require_relative 'literature_requests/request'
   require_relative 'literature_requests/access_key'
+  require_relative 'literature_requests/publication'
 
   # Repositories
   require_relative 'literature_requests/repository'
   require_relative 'literature_requests/request_records'
   require_relative 'literature_requests/congregation'
   require_relative 'literature_requests/access_key_repository'
+  require_relative 'literature_requests/publication_repository'
 
   # Factories
   require_relative 'literature_requests/factory_methods'

@@ -5,7 +5,7 @@ module LiteratureRequests
     attr_reader :overseer
 
     def initialize(members)
-      @overseer = members.first(&:group_overseer).group_overseer
+      @overseer = members.first(&:group_overseer)&.group_overseer
       @members  = members
     end
 

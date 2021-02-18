@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+require_relative '../lib/literature_requests'
+
+include LiteratureRequests
+
+mwbs = meeting_workbooks(year: 2021)
+ws   = magazines(code: :w, year: 2021)
+wps  = magazines(code: :wp, year: 2021)
+gs   = magazines(code: :g, year: 2021)
+
+pp publications.store_all!(mwbs + ws + wps + gs)

@@ -42,6 +42,10 @@ module LiteratureRequests
         view :index, locals: { new_requests: LR.requests.by_status(:new) }
       end
 
+      r.get 'items' do
+        view :items, locals: { items: LR.requests.to_a } # TODO: Add pagination
+      end
+
       r.on 'request' do
         @items = r.session.fetch('items') { EMPTY_ARRAY }.group_by { |i| i['code'] }.values
 

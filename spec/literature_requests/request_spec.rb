@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe LR::Request do
-  let(:items) { [described_class::Item.new(literature_code: 'wp21.1-E', status: :new)] }
+  let(:items) { [described_class::Item.new(publication_code: 'wp21.1-E', status: :new)] }
   let(:person) { LR::Person.new(first_name: 'Testy', last_name: 'Tester') }
   let(:request) { described_class.new(items: items, requester: person) }
 
@@ -17,7 +17,7 @@ RSpec.describe LR::Request do
 
   context '.[]' do
     it "should accept a graph of attributes and construct a request and it's items" do
-      request = described_class[requester: person, items: [{ literature_code: 'wp21.1-E', status: :pending }]]
+      request = described_class[requester: person, items: [{ publication_code: 'wp21.1-E', status: :pending }]]
 
       expect(request.requester).to be person
       expect(request.items.count).to be 1
@@ -25,7 +25,7 @@ RSpec.describe LR::Request do
     end
 
     it "should set any items default value to :new, if it's not specified" do
-      request = described_class[requester: person, items: [{ literature_code: 'wp21.1-E' }, { literature_code: 'wp21.2-E' }]]
+      request = described_class[requester: person, items: [{ publication_code: 'wp21.1-E' }, { publication_code: 'wp21.2-E' }]]
 
       request.items.each do |item|
         expect(item.status).to be :new
@@ -37,7 +37,7 @@ RSpec.describe LR::Request do
     it 'should return a collection of items' do
       request.items.each do |item|
         expect(item).to be_an_instance_of described_class::Item
-        expect(item).to respond_to :literature_code
+        expect(item).to respond_to :publication_code
       end
     end
 
@@ -71,7 +71,7 @@ RSpec.describe LR::Request do
       it 'should return the appropriate status if a status_code is given' do
         code   = described_class::Item::STATUS_CODES.keys.sample
         status = described_class::Item::STATUS_CODES[code]
-        item   = described_class::Item.new(literature_code: 'wp21.1-E', status_code: code)
+        item   = described_class::Item.new(publication_code: 'wp21.1-E', status_code: code)
         expect(item.status).to be status
       end
     end

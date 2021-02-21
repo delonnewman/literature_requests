@@ -67,6 +67,7 @@ module LiteratureRequests
 
       DEFAULT_ATTRIBUTES = {
         status_code: 0,
+        quantity: 0,
         created_at: ->{ Time.now },
         updated_at: ->{ Time.now }
       }.freeze
@@ -76,11 +77,11 @@ module LiteratureRequests
       end
 
       def status
-        @hash.fetch(:status) { STATUS_CODES[status_code] }
+        fetch(:status) { STATUS_CODES[status_code] }
       end
 
       def status_code
-        @hash.fetch(:status_code) { STATUSES[status] }
+        fetch(:status_code) { STATUSES[status] }
       end
 
       private

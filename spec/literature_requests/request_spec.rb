@@ -1,9 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe LR::Request do
-  let(:items) { [described_class::Item.new(publication_code: 'wp21.1-E', status: :new)] }
   let(:person) { LR::Person.new(first_name: 'Testy', last_name: 'Tester') }
   let(:request) { described_class.new(items: items, requester: person) }
+  let(:items) { [described_class::Item.new(publication_code: 'wp21.1-E', status: :new),
+                 described_class::Item.new(publication_code: 'wp21.2-E', status: :new)] }
 
   it 'should have a collection of items' do
     expect(request.items).to be items

@@ -1,12 +1,20 @@
-<table class="table">
-  <thead>
-    <tr>
-    </tr>
-  </thead>
-  <tbody>
-    <% items.each do |item| %>
+<div class="container">
+  <table class="table table-striped">
+    <thead>
       <tr>
+        <% fields.values.each do |name| %>
+          <th><%= name %></th>
+        <% end %>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% items.each do |item| %>
+        <tr>
+          <% fields.keys.each do |key| %>
+            <td><%= item.send(key) %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

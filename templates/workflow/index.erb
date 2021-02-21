@@ -3,6 +3,45 @@
     <div id="new-requests" class="row d-flex align-content-start">
       <h3>New Requests</h3>
       <% new_requests.each do |request| %>
+        <div class="card me-4 mb-4 p-0" style="width:350px">
+          <div class="card-body">
+            <h5 class="card-title mb-0"><%= request.requester %></h5>
+            <div class="text-muted"><%= request.requester.group_overseer %> Group</div>
+            <small class="d-block text-muted font-italic">Requested <%= time_ago_in_words request.items.first.created_at %></small>
+            <ul class="list-group mt-2">
+              <% request.items.each do |item| %>
+                <li class="list-group-item">
+                  <%= item.publication_name %> <small class="text-muted"><%= item.publication_code %></small>
+                  <span class="badge bg-info"><%= item.quantity %></span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <div class="dropdown">
+              <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                Change Status
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                <% statuses.each do |(status_name, status_code)| %>
+                  <%# next if request.items.first.status?(status) %>
+                  <li>
+                    <form method="post" action="request/status">
+                      <input type="hidden" name="status_code" value="<%= status_code %>">
+                      <button class="dropdown-item"><%= status_name %></button>
+                    </form>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div id="pending-requests" class="row d-flex align-content-start">
+      <h3>Pending Requests</h3>
+      <% pending_requests.each do |request| %>
         <div class="card me-4 mb-4" style="width:350px">
           <div class="card-body">
             <h5 class="card-title"><%= request.requester %></h5>

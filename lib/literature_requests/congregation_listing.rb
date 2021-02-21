@@ -7,7 +7,7 @@ module LiteratureRequests
     end
 
     def groups
-      group_by { |p| p.group_overseer || p.name }
+      group_by(&:group_overseer)
         .values
         .map(&:sort)
         .map(&Group.method(:new))

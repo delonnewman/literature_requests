@@ -13,5 +13,9 @@ module LiteratureRequests
 
       first_name <=> first_name
     end
+
+    def group_overseer
+      self[:group_overseer] || name
+    end
   end
 end

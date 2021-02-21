@@ -4,18 +4,18 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th></th>
+          <th scope="col">Name</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
         <% group.each do |person| %>
           <tr>
-            <td><%= person.name %></td>
-            <td>
+            <td width="60%"><%= person.name %></td>
+            <td width="40%">
               <% if person.access_key %>
-                <%= request_link(person) %>
-                <a class="btn btn-secondary btn-sm" href="<%= request_link_mail(person) %>">Email Request Link</a>
+                <%= request_link person %>
+                <a class="btn btn-secondary btn-sm" href="<%= request_link_mail person %>">Email Request Link</a>
               <% else %>
                 <form method="post" action="/congregation/access_key/<%= person.id %>">
                   <button class="btn btn-secondary btn-sm">Permit Access</button>

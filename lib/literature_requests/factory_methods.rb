@@ -13,6 +13,10 @@ module LiteratureRequests
     RequestRecords.new
   end
 
+  def request_item_statuses
+    Request.statuses
+  end
+
   def generate_access_key_for(person_id)
     AccessKey[
       id:        SecureRandom.uuid,

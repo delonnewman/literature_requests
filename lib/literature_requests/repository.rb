@@ -15,12 +15,13 @@ module LiteratureRequests
     end
 
     def run(query, *args, factory: nil, &block)
-      results = @dataset.db.fetch(query, *args).map do |row|
+      results = []
+      @dataset.db.fetch(query, *args) do |row|
         row = row.transform_keys(&:to_sym)
         if factory
-          factory[row]
+          results << factory[row]
         else
-          row
+          results << row
         end
       end
 

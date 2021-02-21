@@ -36,7 +36,9 @@ module LiteratureRequests
     end
 
     def id
-      fetch(:id) { SecureRandom.uuid }
+      fetch(:id) do
+        @hash[:id] ||= SecureRandom.uuid
+      end
     end
 
     def requester
@@ -67,7 +69,7 @@ module LiteratureRequests
 
       DEFAULT_ATTRIBUTES = {
         status_code: 0,
-        quantity: 0,
+        quantity: 1,
         created_at: ->{ Time.now },
         updated_at: ->{ Time.now }
       }.freeze

@@ -11,7 +11,7 @@ module LiteratureRequests
     end
 
     def request_link(person)
-      %{<a href="#{request_path(person)}">Request Link</a>}
+      %{<a href="#{request_path(person)}">View Request Form</a>}
     end
 
     def request_link_mail(person)
@@ -39,18 +39,30 @@ module LiteratureRequests
 
     route do |r|
       r.root do
-        view :index, locals: { new_requests: LR.requests.by_status(:new) }
+        view :index, locals: {
+          statuses: LR.request_item_statuses,
+          new_requests: LR.requests.by_status(:new),
+          pending_requests: LR.requests.by_status(:pending)
+        }
       end
 
       r.get 'items' do
-        view :items, locals: { items: LR.requests.to_a } # TODO: Add pagination
+        fields = {
+          person_name: 'Requester',
+          publication_name: 'Publication Name',
+          publication_code: 'Publication Code',
+          quantity: 'Quantity',
+          status: 'Status'
+        }
+
+        view :items, locals: { fields: fields, items: LR.requests.request_items } # TODO: Add pagination
       end
 
       r.on 'request' do
         @items = r.session.fetch('items') { EMPTY_ARRAY }.group_by { |i| i['code'] }.values
 
         r.post 'submission' do
-          LR.requests.store!(Request[symbolize_keys(r.params['request'])])
+          LR.requests.store_request!(Request[symbolize_keys(r.params['request'])])
           r.session['items'] = []
 
           access_id, key = r.params.values_at('access_id', 'key')

@@ -2,24 +2,58 @@ module LiteratureRequests
   class Request < Entity
     require :items, :requester
 
-    def self.[](attributes)
-      items = attributes.fetch(:items) { EMPTY_ARRAY }
-      new(attributes
-          .slice(:requester)
-          .merge(items: items.map { |attrs| Item.new(attrs) }))
+    class << self
+      def [](attributes = EMPTY_HASH)
+        items = attributes.fetch(:items) { EMPTY_ARRAY }
+        new(attributes
+            .slice(:requester, :id)
+            .merge(items: items.map { |attrs| Item.new(attrs) }))
+      end
+  
+      def ensure_status_code(*values)
+        values.map do |status|
+          case status
+          when Symbol, String
+            statuses.fetch(status.to_sym) { raise "Invalid status name: #{status.inspect}" }
+          else
+            raise "Invalid status code #{status.inspect}" unless Item::STATUS_CODES[status]
+            status
+          end
+        end
+      end
+  
+      def statuses
+        Item::STATUSES
+      end
+  
+      def status_codes
+        statuses.values
+      end
+  
+      def status_names
+        statuses.keys
+      end
     end
 
     def id
       fetch(:id) { SecureRandom.uuid }
     end
 
+    def requester
+      requester = fetch(:requester)
+      return requester if requester.is_a?(Person)
+
+      Person[requester]
+    end
+
     class Item < Entity
-      require :literature_code
+      require :publication_code
 
       STATUSES = {
         new:      0,
         pending:  1,
-        recieved: 2
+        recieved: 2,
+        pickedup: 3,
       }.freeze
 
       STATUS_CODES = STATUSES.map(&:reverse).to_h.freeze

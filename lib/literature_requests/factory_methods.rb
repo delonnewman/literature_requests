@@ -9,6 +9,10 @@ module LiteratureRequests
     AccessKeyRepository.new
   end
 
+  def requests
+    RequestRecords.new
+  end
+
   def generate_access_key_for(person_id)
     AccessKey[
       id:        SecureRandom.uuid,
@@ -44,5 +48,9 @@ module LiteratureRequests
 
   def publications
     PublicationRepository.new
+  end
+
+  def intake_dashboard(access_id:, key:)
+    IntakeDashboard.new(access_id, key)
   end
 end

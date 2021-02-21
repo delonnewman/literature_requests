@@ -3,7 +3,7 @@ module LiteratureRequests
   class WorkflowApplication < Roda
     plugin :render, views: 'templates/workflow'
     plugin :all_verbs
-    plugin :sessions, secret: SecureRandom.base64(64)
+    plugin :sessions, secret: 'PomGByg46ORpjO9mNEwHLN0L5dm55KAMJSuc7su63UIkhMMNqFC97aMA+Pfnsp2htHpv6p2jnPpHkd82vrhxrQ=='
     # TODO: learn about roda's csrf support
 
     def request_path(person)
@@ -18,38 +18,60 @@ module LiteratureRequests
       %{mailto:#{person.email}?subject=Literature%20Request%20Form&amp;body=#{request_path(person)}}
     end
 
+    def time_ago_in_words(time)
+      time
+    end
+
+    def symbolize_keys(hash)
+      return EMPTY_HASH if hash.nil?
+
+      hash.reduce({}) do |h, (key, value)|
+        case value
+        when Hash
+          h.merge!(key.to_sym => symbolize_keys(value))
+        when Enumerable
+          h.merge!(key.to_sym => value.map(&method(:symbolize_keys)))
+        else
+          h.merge!(key.to_sym => value)
+        end
+      end
+    end
+
     route do |r|
       r.root do
-        view :index, locals: { listing: LR.congregation.listing }
+        view :index, locals: { new_requests: LR.requests.by_status(:new) }
       end
 
       r.on 'request' do
-        r.is String do |access_id|
-          key    = r.params['key']
-          person = LR.congregation.person_by_access(access_id: access_id, key: key)
-          publications = [
-            ['Awake!', LR.publications.magazine_by(code: :g, year: 2021)],
-            ['Watchtower (public edition)' , LR.publications.magazine_by(code: :wp, year: 2021)],
-            ['Watchtower (study edition)' , LR.publications.magazine_by(code: :w, year: 2021)],
-            ['Our Christian Life and Ministry Meeting Workbook', LR.publications.meeting_workbooks_by(year: 2021)]
-          ]
+        @items = r.session.fetch('items') { EMPTY_ARRAY }.group_by { |i| i['code'] }.values
 
-          if person
-            view :request, locals: { person: person, publications: publications, key: key, access_id: access_id }, layout: :request_layout
-          else
-            view :no_access, layout: :request_layout
-          end
+        r.post 'submission' do
+          LR.requests.store!(Request[symbolize_keys(r.params['request'])])
+          r.session['items'] = []
+
+          access_id, key = r.params.values_at('access_id', 'key')
+          r.redirect "/request/#{access_id}?key=#{key}"
         end
 
         r.post 'item' do
-          key    = r.params['key']
-          person = LR.congregation.person_by_access(access_id: access_id, key: key)
-          r.session['items'] ||= []
-          r.session['items'] << { person_id: person.id, code: r.params['code'], name: r.params['name'] }
+          puts "Posting item #{r.params}"
 
-          pp r.params
+          r.session['items'] ||= []
+          r.session['items'] << r.params.slice('person_id', 'code', 'name')
+
+          access_id, key = r.params.values_at('access_id', 'key')
 
           r.redirect "/request/#{access_id}?key=#{key}"
+        end
+
+        r.is String do |access_id|
+          dashboard = LR.intake_dashboard(access_id: access_id, key: r.params['key'])
+
+          if dashboard.person
+            view :request, locals: { dashboard: dashboard, items: @items }, layout: :request_layout
+          else
+            view :no_access, layout: :request_layout
+          end
         end
       end
 

@@ -1,19 +1,22 @@
 <div class="container">
-  <% listing.groups.each do |group| %>
-    <h2><%= group.overseer %> Group</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% group.each do |person| %>
-          <tr>
-            <td><%= person.name %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% end %>
+  <div id="requests">
+    <div id="new-requests" class="row d-flex align-content-start">
+      <h3>New Requests</h3>
+      <% new_requests.each do |request| %>
+        <div class="card me-4 mb-4" style="width:350px">
+          <div class="card-body">
+            <h5 class="card-title"><%= request.requester %></h5>
+            <ul class="list-group">
+              <% request.items.each do |item| %>
+                <li class="list-group-item">
+                  <%= item.publication_name %>
+                  <span class="badge bg-info"><%= item.quantity %></span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>

@@ -14,6 +14,7 @@ end
 desc "Setup application"
 task :setup => :'db:migrate' do
   sh './scripts/import-congregation db/data/congregation_members.csv'
+  sh './scripts/initialize-publications'
 end
 
 desc "Start development server"

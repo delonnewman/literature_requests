@@ -23,6 +23,7 @@ Sequel.migration do
     create_table? :request_items do
       uuid :request_id, null: false, index: true
       String :publication_code, null: false, index: true
+      Integer :quantity, null: false, index: true
       Integer :status_code, null: false, index: true
       foreign_key :requester_id, :congregation
       Time :created_at, null: false, index: true

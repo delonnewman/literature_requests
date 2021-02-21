@@ -30,8 +30,10 @@ module LiteratureRequests
 
   # Views
   require_relative 'literature_requests/congregation_listing'
+  require_relative 'literature_requests/intake_dashboard'
 
+  # Some helpful constants
   EMPTY_ARRAY = [].freeze
-
+  EMPTY_HASH  = {}.freeze
   LR = self
 end

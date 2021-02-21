@@ -1,20 +1,71 @@
-<h1>Hello <%= person %></h1>
-
-<% publications.each do |(name, publications)| %>
-  <h3><%= name %></h3>
-  <div class="publications row d-flex align-content-start">
-    <% publications.each do |publication| %>
-      <div class="card mb-4 me-4" style="width:18rem">
-        <div class="card-body">
-          <h6><%= publication %></h6>
-          <form method="post" action="/request/<%= access_id %>/item">
-            <input type="hidden" name="key" value="<%= key %>">
-            <input type="hidden" name="code" value="<%= publication.code %>">
-            <input type="hidden" name="name" value="<%= publication.name %>">
-            <button class="btn btn-primary btn-sm">Add</button>
-          </form>
+<div class="d-flex justify-content-between">
+  <h1>Hello <%= dashboard.person %></h1>
+  <div class="dropdown">
+    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+      Request <span class="badge bg-success"><%= items.map(&:count).sum %> items</span>
+    </button>
+    <div class="dropdown-menu shadow" aria-labelledby="dropdownMenuButton1">
+      <form method="post" action="/request/submission">
+        <input type="hidden" name="access_id" value="<%= dashboard.access_id %>">
+        <input type="hidden" name="key" value="<%= dashboard.key %>">
+        <input type="hidden" name="request[requester][id]" value="<%= dashboard.person.id %>">
+        <input type="hidden" name="request[requester][first_name]" value="<%= dashboard.person.first_name %>">
+        <input type="hidden" name="request[requester][last_name]" value="<%= dashboard.person.last_name %>">
+        <table class="dropdown-item">
+          <tbody>
+            <% items.each do |items| %>
+              <tr>
+                <td width="90%">
+                  <input type="hidden" name="request[items][][publication_code]" value="<%= items.first['code'] %>">
+                  <%= items.first['name'] %>
+                </td>
+                <td width="10%">
+                  <input type="number" name="request[items][][quantity]" value="<%= items.count %>"></div>
+                  <button type="button" class="btn btn-light btn-sm">&times;</button>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item">
+          <button type="submit" class="btn btn-primary btn-sm">Submit</button>
         </div>
-      </div>
-    <% end %>
+      </form>
+    </div>
+  </div>
+</div>
+
+<% if dashboard.show_requests? %>
+  <div class="card bg-light">
+    <div class="card-body">
+      <h5 class="card-title">Pending Requests</h5>
+      <% dashboard.requests.each do |request| %>
+        Requested <%= time_ago_in_words request.items.first.created_at %> <%= request.items.first.status %> <span class="badge bg-info"><%= request.items.count %> items</span>
+      <% end %>
+    </div>
   </div>
 <% end %>
+
+<div id="publications-list" class="mt-5">
+  <% dashboard.publications.each do |(name, publications)| %>
+    <h3><%= name %></h3>
+    <div class="publications row d-flex align-content-start">
+      <% publications.each do |publication| %>
+        <div class="card mb-4 me-4" style="width:18rem">
+          <div class="card-body">
+            <h6><%= publication %></h6>
+            <form method="post" action="/request/item">
+              <input type="hidden" name="access_id" value="<%= dashboard.access_id %>">
+              <input type="hidden" name="key" value="<%= dashboard.key %>">
+              <input type="hidden" name="person_id" value="<%= dashboard.person.id %>">
+              <input type="hidden" name="code" value="<%= publication.code %>">
+              <input type="hidden" name="name" value="<%= publication.name %>">
+              <button class="btn btn-primary btn-sm">Add</button>
+            </form>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

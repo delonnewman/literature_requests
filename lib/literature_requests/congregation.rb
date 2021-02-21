@@ -24,6 +24,18 @@ module LiteratureRequests
            where access_keys.id = ? and access_keys.key = ?
     SQL
 
+    PERSON_ACCESS_QUERY = <<~SQL
+          select person.id,
+                 person.first_name,
+                 person.last_name,
+                 person.email,
+                 access_keys.id as access_id,
+                 access_keys.key as access_key
+            from congregation person
+      inner join access_keys on person.id = access_keys.person_id
+           where person.id = ?
+    SQL
+
     def initialize
       super(LiteratureRequests.db[:congregation].order(:last_name, :first_name), Person)
     end
@@ -34,6 +46,13 @@ module LiteratureRequests
 
     def by_id(id)
       result = @dataset.first(id: id)
+      return nil if result.nil?
+
+      Person[result]
+    end
+
+    def person_with_access_by_id(id)
+      result = @dataset.db.fetch(PERSON_ACCESS_QUERY, id).first
       return nil if result.nil?
 
       Person[result]

@@ -39,10 +39,11 @@ module LiteratureRequests
 
     route do |r|
       r.root do
+        pending_publications = LR.requests.publications_by_status(:pending)
         view :index, locals: {
           statuses: LR.request_item_statuses,
           new_requests: LR.requests.by_status(:new),
-          pending_requests: LR.requests.by_status(:pending)
+          pending_publications: pending_publications
         }
       end
 
@@ -67,6 +68,13 @@ module LiteratureRequests
 
           access_id, key = r.params.values_at('access_id', 'key')
           r.redirect "/request/#{access_id}?key=#{key}"
+        end
+
+        r.post 'status' do
+          request = LR.requests.by_id(r.params['request_id'])
+          LR.requests.update_status!(request.id, r.params['status_code']) if request
+
+          r.redirect "/"
         end
 
         r.post 'item' do

@@ -13,10 +13,10 @@ module LiteratureRequests
       def ensure_status_code(*values)
         values.map do |status|
           case status
-          when Symbol, String
+          when Symbol
             statuses.fetch(status.to_sym) { raise "Invalid status name: #{status.inspect}" }
           else
-            raise "Invalid status code #{status.inspect}" unless Item::STATUS_CODES[status]
+            raise "Invalid status code #{status.inspect}" unless Item::STATUS_CODES[status.to_i]
             status
           end
         end

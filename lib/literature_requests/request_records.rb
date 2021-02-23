@@ -50,6 +50,7 @@ module LiteratureRequests
   inner join request_items item on person.id = item.requester_id
   inner join publications pubs on item.publication_code = pubs.code
        where item.status_code in (?)
+    order by publication_code
     SQL
 
     REQUESTS_BY_ID_QUERY = <<~SQL
@@ -80,6 +81,24 @@ module LiteratureRequests
     def by_id(request_id)
       run REQUESTS_BY_ID_QUERY, request_id do |results|
         request_from_results(request_id, results)
+      end
+    end
+
+    def update_status!(request_id, status)
+      status_code = Request.ensure_status_code(status)
+      @dataset.where(request_id: request_id).update(status_code: status_code)
+    end
+
+    def publications_by_status(status)
+      status_code = Request.ensure_status_code(status)
+      run REQUESTS_BY_STATUS_QUERY, status_code do |results|
+        results.group_by { |r| r.values_at(:publication_code, :publication_name) }.map do |(code, name), results|
+          requesters = results.group_by { |r| r.slice(:id, :first_name, :last_name, :group_overseer) }.map do |person, results|
+            items = results.map { |r| Request::Item[r.slice(:request_id, :status_code, :publication_code, :quantity, :created_at, :updated_at)] }
+            Person[person.merge!(items: items)]
+          end
+          Publication[code: code, name: name, requesters: requesters]
+        end
       end
     end
 

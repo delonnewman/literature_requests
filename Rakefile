@@ -7,7 +7,7 @@ task :default => :spec
 namespace :db do
   desc "Run migrations"
   task :migrate do
-    sh 'sequel config/database.yml -m db/migrations/'
+    sh 'sequel $DATABASE_URL -m db/migrations/'
   end
 end
 

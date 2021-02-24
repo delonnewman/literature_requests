@@ -19,6 +19,6 @@ module LiteratureRequests
   end
 
   def db
-    @db ||= Sequel.connect(db_config.fetch(env.to_s))
+    @db ||= Sequel.connect(ENV.fetch('DATABASE_URL'))
   end
 end

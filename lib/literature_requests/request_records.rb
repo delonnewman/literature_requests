@@ -38,6 +38,7 @@ module LiteratureRequests
              person.first_name,
              person.last_name,
              overseer.first_name || ' ' || overseer.last_name as group_overseer,
+             item.item_id,
              item.request_id,
              item.status_code,
              item.publication_code,
@@ -70,6 +71,23 @@ module LiteratureRequests
        where item.request_id in (?)
     SQL
 
+    ITEMS_BY_ID_QUERY = <<~SQL
+      select person.id,
+             person.first_name,
+             person.last_name,
+             item.request_id,
+             item.status_code,
+             item.publication_code,
+             pubs.name as publication_name,
+             item.quantity,
+             item.created_at,
+             item.updated_at
+        from congregation person
+  inner join request_items item on person.id = item.requester_id
+  inner join publications pubs on item.publication_code = pubs.code
+       where item.item_id in (?)
+    SQL
+
     def initialize
       super(LiteratureRequests.db[:request_items], Request::Item)
     end
@@ -84,7 +102,23 @@ module LiteratureRequests
       end
     end
 
-    def update_status!(request_id, status)
+    def items_by_id(*item_ids)
+      run ITEMS_BY_ID_QUERY, *item_ids, &method(:items_from_results)
+    end
+
+    def people_with_items_by_status(status)
+      status_code = Request.ensure_status_code(status)
+      run REQUESTS_BY_STATUS_QUERY, status_code do |results|
+        items_from_results(results).group_by { |item| item.requester }
+      end
+    end
+
+    def update_status_by_item!(status, item_ids)
+      status_code = Request.ensure_status_code(status)
+      @dataset.where(item_id: item_ids).update(status_code: status_code)
+    end
+
+    def update_status!(status, request_id)
       status_code = Request.ensure_status_code(status)
       @dataset.where(request_id: request_id).update(status_code: status_code)
     end
@@ -94,7 +128,7 @@ module LiteratureRequests
       run REQUESTS_BY_STATUS_QUERY, status_code do |results|
         results.group_by { |r| r.values_at(:publication_code, :publication_name) }.map do |(code, name), results|
           requesters = results.group_by { |r| r.slice(:id, :first_name, :last_name, :group_overseer) }.map do |person, results|
-            items = results.map { |r| Request::Item[r.slice(:request_id, :status_code, :publication_code, :quantity, :created_at, :updated_at)] }
+            items = results.map { |r| Request::Item[r.slice(:item_id, :request_id, :status_code, :publication_code, :quantity, :created_at, :updated_at)] }
             Person[person.merge!(items: items)]
           end
           Publication[code: code, name: name, requesters: requesters]
@@ -138,6 +172,13 @@ module LiteratureRequests
           id: request_id,
           requester: Person[results.first.slice(:id, :first_name, :last_name, :group_overseer)],
           items: results.map { |i| i.slice(:request_id, :status_code, :publication_code, :publication_name, :quantity, :created_at, :updated_at) }]
+      end
+
+      def items_from_results(results)
+        results.map do |result|
+          person = Person[result.slice(:id, :first_name, :last_name, :group_overseer)]
+          Request::Item[result.slice(:item_id, :request_id, :status_code, :quantity, :publication_code, :publication_name, :created_at, :updated_at).merge(requester: person)]
+        end
       end
   end
 end

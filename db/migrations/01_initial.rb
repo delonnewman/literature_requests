@@ -21,6 +21,7 @@ Sequel.migration do
     end
 
     create_table? :request_items do
+      primary_key :item_id
       uuid :request_id, null: false, index: true
       String :publication_code, null: false, index: true
       Integer :quantity, null: false, index: true

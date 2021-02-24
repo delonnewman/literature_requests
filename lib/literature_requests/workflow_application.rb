@@ -43,8 +43,15 @@ module LiteratureRequests
         view :index, locals: {
           statuses: LR.request_item_statuses,
           new_requests: LR.requests.by_status(:new),
-          pending_publications: pending_publications
+          pending_publications: pending_publications,
+          received_items: LR.requests.people_with_items_by_status(:received)
         }
+      end
+
+      r.post 'items/status' do
+        LR.requests.update_status_by_item!(r.params['status'], r.params['item_ids'])
+
+        r.redirect "/"
       end
 
       r.get 'items' do
@@ -71,8 +78,7 @@ module LiteratureRequests
         end
 
         r.post 'status' do
-          request = LR.requests.by_id(r.params['request_id'])
-          LR.requests.update_status!(request.id, r.params['status_code']) if request
+          LR.requests.update_status!(r.params['status_code'], r.params['request_id'])
 
           r.redirect "/"
         end

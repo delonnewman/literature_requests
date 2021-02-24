@@ -26,6 +26,9 @@ module LiteratureRequests
   require_relative 'literature_requests/access_key_repository'
   require_relative 'literature_requests/publication_repository'
 
+  # Models
+  require_relative 'literature_requests/user'
+
   # Factories
   require_relative 'literature_requests/factory_methods'
 

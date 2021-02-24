@@ -37,15 +37,35 @@ module LiteratureRequests
       end
     end
 
+    def authenticate!(r)
+      r.redirect '/login' unless @current_user
+    end
+
     route do |r|
       r.root do
-        pending_publications = LR.requests.publications_by_status(:pending)
+        authenticate! r
+
         view :index, locals: {
           statuses: LR.request_item_statuses,
           new_requests: LR.requests.by_status(:new),
-          pending_publications: pending_publications,
+          pending_publications: LR.requests.publications_by_status(:pending),
           received_items: LR.requests.people_with_items_by_status(:received)
         }
+      end
+
+      r.on 'login' do
+        r.get do
+          view :login
+        end
+
+        r.post do
+          @current_user = User[r.params['user_id']]
+          if @current_user.password == r.params['password']
+            r.redirect '/'
+          else
+            "Unauthorized"
+          end
+        end
       end
 
       r.post 'items/status' do

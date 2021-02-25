@@ -96,6 +96,12 @@
                 <% end %>
               </tr>
             <% end %>
+            <tr>
+              <th>Totals</th>
+              <% pending_publications.each do |publication| %>
+                <td><%= publication.requesters.map { |user| user.items.count }.sum %></td>
+              <% end %>
+            </tr>
           </tbody>
         </table>
         </div>

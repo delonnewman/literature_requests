@@ -41,51 +41,58 @@ module LiteratureRequests
       @current_user
     end
 
-    def authenticate!(r)
+    def authenticate!(r, &block)
+      return block.call(@current_user) if @current_user
+
       access_id, access_key = r.session.values_at('access_id', 'key')
-      unless access_id && access_key
-        access_id, access_key = r.params.values_at('access_id', 'key') 
-        if access_id && access_key
-          @current_user = LR.congregation.person_by_access(access_id: access_id, key: access_key)
-          r.session['access_id'] = access_id
-          r.session['key'] = access_key
-        end
+      access_id, access_key = r.params.values_at('access_id', 'key') unless access_id && access_key
+      
+      if access_id && access_key
+        @current_user = LR.congregation.person_by_access(access_id: access_id, key: access_key)
+        r.session['access_id'] = access_id
+        r.session['key'] = access_key
       end
 
-      if @current_user.nil?
+      if @current_user.nil? || !@current_user.admin?
         r.response.status = 403
-        r.response.finish_with_body 'Unauthorized'
+        'Unauthorized'
+      else
+        block.call(@current_user)
       end
     end
 
     route do |r|
-      authenticate! r
-
       r.root do
-        view :index, locals: {
-          statuses: LR.request_item_statuses,
-          new_requests: LR.requests.by_status(:new),
-          pending_publications: LR.requests.publications_by_status(:pending),
-          received_items: LR.requests.people_with_items_by_status(:received)
-        }
+        authenticate! r do
+          view :index, locals: {
+            statuses: LR.request_item_statuses,
+            new_requests: LR.requests.by_status(:new),
+            pending_publications: LR.requests.publications_by_status(:pending),
+            received_items: LR.requests.people_with_items_by_status(:received)
+          }
+        end
       end
 
       r.post 'items/status' do
-        LR.requests.update_status_by_item!(r.params['status'], r.params['item_ids'])
+        authenticate! r do
+          LR.requests.update_status_by_item!(r.params['status'], r.params['item_ids'])
 
-        r.redirect "/"
+          r.redirect "/"
+        end
       end
 
       r.get 'items' do
-        fields = {
-          person_name: 'Requester',
-          publication_name: 'Publication Name',
-          publication_code: 'Publication Code',
-          quantity: 'Quantity',
-          status: 'Status'
-        }
-
-        view :items, locals: { fields: fields, items: LR.requests.request_items } # TODO: Add pagination
+        authenticate! r do
+          fields = {
+            person_name: 'Requester',
+            publication_name: 'Publication Name',
+            publication_code: 'Publication Code',
+            quantity: 'Quantity',
+            status: 'Status'
+          }
+  
+          view :items, locals: { fields: fields, items: LR.requests.request_items } # TODO: Add pagination
+        end
       end
 
       r.on 'request' do
@@ -127,7 +134,9 @@ module LiteratureRequests
 
       r.on 'congregation' do
         r.get do
-          view :congregation, locals: { listing: LR.congregation.listing }
+          authenticate! r do
+            view :congregation, locals: { listing: LR.congregation.listing }
+          end
         end
 
         r.on 'access_key' do

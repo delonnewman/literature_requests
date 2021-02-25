@@ -26,7 +26,7 @@ end
 
 def overseer_by_name(cong, name)
   first, last = name.split(/\s+/)
-  cong.find_by_name(first_name: first, last_name: last)
+  cong.find_by(first_name: first, last_name: last)
 end
 
 table = CSV.table(ARGV[0])
@@ -36,4 +36,5 @@ congregation.store_all!(overseers(table))
 members = table.map do |row|
   person(congregation, row)
 end
+
 congregation.upsert_all!(members)

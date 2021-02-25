@@ -17,5 +17,13 @@ module LiteratureRequests
     def group_overseer
       self[:group_overseer] || name
     end
+
+    def admin?
+      admin
+    end
+
+    def group_overseer?
+      overseer
+    end
   end
 end

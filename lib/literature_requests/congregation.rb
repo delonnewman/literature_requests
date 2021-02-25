@@ -8,7 +8,9 @@ module LiteratureRequests
                publisher.email,
                access_keys.id  as access_id,
                access_keys.key as access_key,
-               overseer.first_name  || ' ' || overseer.last_name  as group_overseer
+               overseer.first_name  || ' ' || overseer.last_name  as group_overseer,
+               publisher.admin,
+               publisher.overseer
           from congregation publisher
      left join congregation overseer on publisher.group_overseer_id = overseer.id
      left join access_keys on publisher.id = access_keys.person_id
@@ -18,7 +20,9 @@ module LiteratureRequests
           select person.id,
                  person.first_name,
                  person.last_name,
-                 person.email
+                 person.email,
+                 person.admin,
+                 person.overseer
             from congregation person
       inner join access_keys on person.id = access_keys.person_id
            where access_keys.id = ? and access_keys.key = ?
@@ -30,7 +34,9 @@ module LiteratureRequests
                  person.last_name,
                  person.email,
                  access_keys.id as access_id,
-                 access_keys.key as access_key
+                 access_keys.key as access_key,
+                 person.admin,
+                 person.overseer
             from congregation person
       inner join access_keys on person.id = access_keys.person_id
            where person.id = ?
@@ -51,6 +57,10 @@ module LiteratureRequests
       Person[result]
     end
 
+    def make_admin!(person_id)
+      @dataset.where(id: person_id).update(admin: true)
+    end
+
     def person_with_access_by_id(id)
       result = @dataset.db.fetch(PERSON_ACCESS_QUERY, id).first
       return nil if result.nil?
@@ -65,7 +75,7 @@ module LiteratureRequests
       Person[result]
     end
 
-    def find_by_name(name)
+    def find_by(name)
       result = @dataset.first(name)
       return nil if result.nil?
 

@@ -6,6 +6,8 @@ module LiteratureRequests
 
     def store!(key)
       @dataset.insert(key.to_hash)
+      record = @dataset.first(key.to_hash)
+      AccessKey[record] if record
     end
   end
 end

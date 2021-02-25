@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+require_relative '../lib/literature_requests'
+
+include LiteratureRequests
+
+if ARGV.count < 2
+  puts "USAGE: #$0 FIRST LAST"
+  exit 1
+end
+
+first, last = ARGV
+pp person = LR.congregation.find_by(first_name: first, last_name: last)
+LR.congregation.make_admin!(person.id)
+pp LR.access_keys.store!(LR.generate_access_key_for(person.id))

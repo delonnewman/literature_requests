@@ -37,35 +37,37 @@ module LiteratureRequests
       end
     end
 
+    def current_user
+      @current_user
+    end
+
     def authenticate!(r)
-      r.redirect '/login' unless @current_user
+      access_id, access_key = r.session.values_at('access_id', 'key')
+      unless access_id && access_key
+        access_id, access_key = r.params.values_at('access_id', 'key') 
+        if access_id && access_key
+          @current_user = LR.congregation.person_by_access(access_id: access_id, key: access_key)
+          r.session['access_id'] = access_id
+          r.session['key'] = access_key
+        end
+      end
+
+      if @current_user.nil?
+        r.response.status = 403
+        r.response.finish_with_body 'Unauthorized'
+      end
     end
 
     route do |r|
-      r.root do
-        authenticate! r
+      authenticate! r
 
+      r.root do
         view :index, locals: {
           statuses: LR.request_item_statuses,
           new_requests: LR.requests.by_status(:new),
           pending_publications: LR.requests.publications_by_status(:pending),
           received_items: LR.requests.people_with_items_by_status(:received)
         }
-      end
-
-      r.on 'login' do
-        r.get do
-          view :login
-        end
-
-        r.post do
-          @current_user = User[r.params['user_id']]
-          if @current_user.password == r.params['password']
-            r.redirect '/'
-          else
-            "Unauthorized"
-          end
-        end
       end
 
       r.post 'items/status' do
@@ -104,8 +106,6 @@ module LiteratureRequests
         end
 
         r.post 'item' do
-          puts "Posting item #{r.params}"
-
           r.session['items'] ||= []
           r.session['items'] << r.params.slice('person_id', 'code', 'name')
 

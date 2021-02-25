@@ -1,65 +1,12 @@
 # frozen_string_literal: true
 module LiteratureRequests
   class WorkflowApplication < Roda
+    include ApplicationHelpers
+
     plugin :render, views: 'templates/workflow'
     plugin :all_verbs
     plugin :sessions, secret: 'PomGByg46ORpjO9mNEwHLN0L5dm55KAMJSuc7su63UIkhMMNqFC97aMA+Pfnsp2htHpv6p2jnPpHkd82vrhxrQ=='
     # TODO: learn about roda's csrf support
-
-    def request_path(person)
-      "/request/#{person.access_id}?key=#{person.access_key}"
-    end
-
-    def request_link(person)
-      %{<a href="#{request_path(person)}">View Request Form</a>}
-    end
-
-    def request_link_mail(person)
-      %{mailto:#{person.email}?subject=Literature%20Request%20Form&amp;body=#{request_path(person)}}
-    end
-
-    def time_ago_in_words(time)
-      time
-    end
-
-    def symbolize_keys(hash)
-      return EMPTY_HASH if hash.nil?
-
-      hash.reduce({}) do |h, (key, value)|
-        case value
-        when Hash
-          h.merge!(key.to_sym => symbolize_keys(value))
-        when Enumerable
-          h.merge!(key.to_sym => value.map(&method(:symbolize_keys)))
-        else
-          h.merge!(key.to_sym => value)
-        end
-      end
-    end
-
-    def current_user
-      @current_user
-    end
-
-    def authenticate!(r, &block)
-      return block.call(@current_user) if @current_user
-
-      access_id, access_key = r.session.values_at('access_id', 'key')
-      access_id, access_key = r.params.values_at('access_id', 'key') unless access_id && access_key
-      
-      if access_id && access_key
-        @current_user = LR.congregation.person_by_access(access_id: access_id, key: access_key)
-        r.session['access_id'] = access_id
-        r.session['key'] = access_key
-      end
-
-      if @current_user.nil? || !@current_user.admin?
-        r.response.status = 403
-        'Unauthorized'
-      else
-        block.call(@current_user)
-      end
-    end
 
     route do |r|
       r.root do

@@ -10,6 +10,7 @@ GEM
     bcrypt (3.1.16)
     diff-lcs (1.4.4)
     erubi (1.10.0)
+    inflection (1.0.0)
     nio4r (2.5.5)
     pg (1.2.3)
     puma (5.2.1)
@@ -44,6 +45,7 @@ DEPENDENCIES
   bcrypt
   erubi
   hash_delegator!
+  inflection
   pg
   puma
   rake

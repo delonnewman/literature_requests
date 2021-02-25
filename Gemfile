@@ -12,6 +12,7 @@ gem 'erubi'
 gem 'puma'
 gem 'rake'
 gem 'bcrypt'
+gem 'inflection'
 
 gem 'hash_delegator', git: 'https://github.com/delonnewman/hash_delegator.git'
 

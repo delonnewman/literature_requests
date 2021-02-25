@@ -1,6 +1,7 @@
 require 'pp'
-require 'logger'
+require 'date'
 require 'yaml'
+require 'logger'
 require 'securerandom'
 
 require 'bundler/setup'
@@ -10,6 +11,7 @@ module LiteratureRequests
   # Utils
   require_relative 'literature_requests/predicate_string'
   require_relative 'literature_requests/utils'
+  require_relative 'literature_requests/application_helpers'
 
   # Entities
   require_relative 'literature_requests/entity'
@@ -25,9 +27,6 @@ module LiteratureRequests
   require_relative 'literature_requests/congregation'
   require_relative 'literature_requests/access_key_repository'
   require_relative 'literature_requests/publication_repository'
-
-  # Models
-  require_relative 'literature_requests/user'
 
   # Factories
   require_relative 'literature_requests/factory_methods'

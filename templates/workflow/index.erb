@@ -99,7 +99,7 @@
             <tr>
               <th>Totals</th>
               <% pending_publications.each do |publication| %>
-                <td><%= publication.requesters.map { |user| user.items.map(&:quantity) }.sum %></td>
+                <td><%= publication.requesters.map { |user| user.items.map(&:quantity).sum }.sum %></td>
               <% end %>
             </tr>
           </tbody>

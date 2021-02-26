@@ -10,7 +10,7 @@ Sequel.migration do
     end
 
     create_table? :publications do
-      String :code, null: false, index: true
+      String :code, null: false, index: true, unique: true
       String :name, null: false, index: true
     end
 

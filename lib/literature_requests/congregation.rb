@@ -61,6 +61,12 @@ module LiteratureRequests
       @dataset.where(id: person_id).update(admin: true)
     end
 
+    def group_overseers
+      @dataset.where(overseer: true).map do |record|
+        Person[record]
+      end
+    end
+
     def person_with_access_by_id(id)
       result = @dataset.db.fetch(PERSON_ACCESS_QUERY, id).first
       return nil if result.nil?

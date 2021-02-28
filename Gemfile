@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 ruby '2.7.2'
 
 gem 'sequel'
-gem 'sequel_pg'
+#gem 'sequel_pg'
 gem 'pg'
 
 gem 'roda'

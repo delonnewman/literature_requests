@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/delonnewman/hash_delegator.git
-  revision: 59d82ad11ed357ddd166072208cad75b06a98656
+  revision: b0661844c851c979966b90b849d75519c72f14fe
   specs:
     hash_delegator (0.1.0)
 

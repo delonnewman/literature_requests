@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 module LiteratureRequests
-  class WorkflowApplication < Roda
+  class Application < Roda
     include ApplicationHelpers
 
     plugin :render, views: 'templates/workflow'
-    plugin :all_verbs
     plugin :sessions, secret: 'PomGByg46ORpjO9mNEwHLN0L5dm55KAMJSuc7su63UIkhMMNqFC97aMA+Pfnsp2htHpv6p2jnPpHkd82vrhxrQ=='
     # TODO: learn about roda's csrf support
 
@@ -47,7 +46,7 @@ module LiteratureRequests
 
         r.post 'submission' do
           LR.requests.store_request!(Request[symbolize_keys(r.params['request'])])
-          r.session['items'] = []
+          r.session.delete('items')
 
           access_id, key = r.params.values_at('access_id', 'key')
           r.redirect "/request/#{access_id}?key=#{key}"

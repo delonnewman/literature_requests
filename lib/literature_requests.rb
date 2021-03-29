@@ -7,6 +7,7 @@ require 'securerandom'
 require 'bundler/setup'
 Bundler.require
 
+# A simple workflow appliaction for handling congregation literature requests.
 module LiteratureRequests
   # Utils
   require_relative 'literature_requests/predicate_string'

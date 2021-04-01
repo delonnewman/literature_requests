@@ -2,3 +2,4 @@ db/*.sqlite
 .bashrc
 .yardoc/
 doc/
+db/data/congregation_members.csv
